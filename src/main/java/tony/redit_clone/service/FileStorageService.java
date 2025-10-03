@@ -1,38 +1,37 @@
 package tony.redit_clone.service;
-import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.mongodb.core.query.Query;
-import com.mongodb.client.gridfs.model.GridFSFile;
 
-@Service 
+import tony.redit_clone.model.Community;
+import tony.redit_clone.repository.CommunityRepository;
+import tony.redit_clone.repository.FileStorageRepository;
+import tony.redit_clone.util.Try;
+import org.springframework.stereotype.Service;
+
+@Service
 public class FileStorageService {
     @Autowired
-    private GridFsTemplate gridFsTemplate;
+    private FileStorageRepository fileStorageRepository;
+    @Autowired
+    private CommunityRepository communityRepository;
 
-    public String store(MultipartFile file) {
-        try {
-            String filename = file.getOriginalFilename();
-
-            // ✅ Check if a file with the same name already exists
-            GridFSFile existingFile = gridFsTemplate.findOne(new Query(Criteria.where("filename").is(filename)));
-            if (existingFile != null) {
-                throw new RuntimeException("File with name '" + filename + "' already exists in GridFS");
-            }
-
-            // ✅ Store file in GridFS
-            Object fileId = gridFsTemplate.store(file.getInputStream(), filename);
-            return fileId.toString();
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to store file", e);
+    public Try<String> createCommunity(String name, String description, MultipartFile banner,  MultipartFile icon) {
+        Community community = new Community();
+        community.setName(name);
+        community.setDescription(description);
+        
+        Try<String> bannerId = this.fileStorageRepository.saveFile(banner);
+        if (bannerId instanceof Try.Failure<String> f) {
+            return Try.failure(f.error());
         }
+        Try<String> iconId = this.fileStorageRepository.saveFile(icon);
+        if (iconId instanceof Try.Failure<String> f) {
+            return Try.failure(f.error());
+        }
+        community.setBannerImage(((Try.Success<String>) bannerId).value());
+        community.setIconImage(((Try.Success<String>) iconId).value());
+        this.communityRepository.save(community);
+        return Try.success(community.getId());
     }
-
-    
-
 }
