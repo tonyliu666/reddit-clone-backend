@@ -1,7 +1,6 @@
 package tony.redit_clone.model;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,9 +18,8 @@ public class Community {
     @Id
     private String id;                
 
-    // name should be unique
-    @Indexed(unique = true)
-    private String name;              
+    private String name; 
+
     private String description;       
     private String slug;         // URL-friendly identifier: example, "r/java-programming"      
     

@@ -5,4 +5,5 @@ import tony.redit_clone.model.Community;
 
 public interface CommunityRepository extends MongoRepository<Community, String> {
     
+    java.util.Optional<Community> findOneByName(String name);
 }

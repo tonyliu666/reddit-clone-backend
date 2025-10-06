@@ -30,7 +30,7 @@ public class CommunityController {
             return "Error creating community: " + f.error().getMessage();
         }
         
-        return "Successfully created community: " + ((Try.Success<String>) result).value();
+        return "Successfully created community: ";
     }
     
 }

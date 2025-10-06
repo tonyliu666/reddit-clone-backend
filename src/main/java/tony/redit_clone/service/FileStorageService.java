@@ -17,6 +17,10 @@ public class FileStorageService {
     private CommunityRepository communityRepository;
 
     public Try<String> createCommunity(String name, String description, MultipartFile banner,  MultipartFile icon) {
+        // check name is unique
+        if (communityRepository.findOneByName(name).isPresent()) {
+            return Try.failure(new RuntimeException("Community name already exists"));
+        }
         Community community = new Community();
         community.setName(name);
         community.setDescription(description);
