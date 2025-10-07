@@ -1,5 +1,7 @@
 package tony.redit_clone.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,7 +12,7 @@ import tony.redit_clone.util.Try;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FileStorageService {
+public class CommunityService {
     @Autowired
     private FileStorageRepository fileStorageRepository;
     @Autowired
@@ -37,5 +39,9 @@ public class FileStorageService {
         community.setIconImage(((Try.Success<String>) iconId).value());
         this.communityRepository.save(community);
         return Try.success(community.getId());
+    }
+    public Try<List<Community>> listCommunities() {
+        // list all communities
+        return Try.success(communityRepository.findAll());
     }
 }

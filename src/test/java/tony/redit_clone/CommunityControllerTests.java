@@ -11,7 +11,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import tony.redit_clone.controller.CommunityController;
-import tony.redit_clone.service.FileStorageService;
+import tony.redit_clone.service.CommunityService;
 import tony.redit_clone.util.Try;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +26,7 @@ class CommunityControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private FileStorageService fileStorageService;
+    private CommunityService fileStorageService;
 
     @Test
     void testCreateCommunity_Success() throws Exception {

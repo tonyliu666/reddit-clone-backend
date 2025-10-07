@@ -54,7 +54,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import tony.redit_clone.repository.FileStorageRepository;
-import tony.redit_clone.service.FileStorageService;
+import tony.redit_clone.service.CommunityService;
 import tony.redit_clone.repository.CommunityRepository;
 import tony.redit_clone.util.Try;
 
@@ -65,7 +65,7 @@ import static org.mockito.Mockito.*;
 class FileStorageServiceTest {
 
     @InjectMocks
-    private FileStorageService fileStorageService;  // Service under test
+    private CommunityService fileStorageService;  // Service under test
 
     @Mock
     private FileStorageRepository fileStorageRepository;  // mocked repo
