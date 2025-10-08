@@ -1,6 +1,8 @@
 package tony.redit_clone.repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,10 +14,24 @@ import tony.redit_clone.util.*;
 public class FileStorageRepository {
 
     private final GridFsTemplate gridFsTemplate;
+    private final GridFsOperations operations;
 
     @Autowired
-    public FileStorageRepository(GridFsTemplate gridFsTemplate) {
+    public FileStorageRepository(GridFsTemplate gridFsTemplate, GridFsOperations operations) {
         this.gridFsTemplate = gridFsTemplate;
+        this.operations = operations;
+    }
+
+    public Try<String> getFile(String id) {
+        return Try.ofChecked(
+            () -> gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)))
+        ).flatMap(file -> {
+            if (file == null) {
+                return Try.failure(new RuntimeException("File not found with id: " + id));
+            }
+            GridFsResource resource = operations.getResource(file);
+            return Try.ofChecked(() -> new String(resource.getInputStream().readAllBytes()));
+        });
     }
 
     public Try<String> saveFile(MultipartFile file) {

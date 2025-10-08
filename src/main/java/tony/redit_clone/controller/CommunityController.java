@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import tony.redit_clone.dto.CommunityResponse;
 import tony.redit_clone.model.Community;
 import tony.redit_clone.service.CommunityService;
 import tony.redit_clone.util.Try;
@@ -39,13 +40,12 @@ public class CommunityController {
     }
 
     @GetMapping(value="/communities-list")
-    public List<Community> communitysList() {
-        // list all communities
-        Try<List<Community>> result = communityService.listCommunities();
-        if (result instanceof Try.Failure<List<Community>> failure) {
-            return null;
+    public List<CommunityResponse> communitysList() {
+        Try<List<CommunityResponse>> result = communityService.listCommunities();
+        if (result instanceof Try.Failure<List<CommunityResponse>> f) {
+            return List.of();
         }
-        return ((Try.Success<List<Community>>) result).value();
+        return ((Try.Success<List<CommunityResponse>>) result).value(); 
     }
     
 }

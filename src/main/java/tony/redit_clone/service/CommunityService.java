@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
+import tony.redit_clone.dto.CommunityResponse;
 import tony.redit_clone.model.Community;
 import tony.redit_clone.repository.CommunityRepository;
 import tony.redit_clone.repository.FileStorageRepository;
@@ -17,6 +18,8 @@ public class CommunityService {
     private FileStorageRepository fileStorageRepository;
     @Autowired
     private CommunityRepository communityRepository;
+
+    
 
     public Try<String> createCommunity(String name, String description, MultipartFile banner,  MultipartFile icon) {
         // check name is unique
@@ -40,8 +43,23 @@ public class CommunityService {
         this.communityRepository.save(community);
         return Try.success(community.getId());
     }
-    public Try<List<Community>> listCommunities() {
-        // list all communities
-        return Try.success(communityRepository.findAll());
+    public Try<List<CommunityResponse>> listCommunities() {
+        Try<List<Community>> result = Try.success(communityRepository.findAll());
+        return result.map(communities -> communities.stream().map(community -> {
+            CommunityResponse response = new CommunityResponse();
+            response.setName(community.getName());
+            response.setDescription(community.getDescription());
+            response.setBannerImageBytes(
+                fileStorageRepository.getFile(community.getBannerImage()) instanceof Try.Success<String> s
+                    ? s.value()
+                    : ""
+            );
+            response.setIconImageBytes(
+                fileStorageRepository.getFile(community.getIconImage()) instanceof Try.Success<String> s
+                    ? s.value()
+                    : ""
+            );
+            return response;
+        }).toList());
     }
 }
