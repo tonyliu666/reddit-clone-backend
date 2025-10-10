@@ -1,4 +1,6 @@
 package tony.redit_clone.repository;
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
@@ -23,15 +25,23 @@ public class FileStorageRepository {
     }
 
     public Try<String> getFile(String id) {
-        return Try.ofChecked(
-            () -> gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)))
-        ).flatMap(file -> {
+        return Try.ofChecked(() -> {
+            GridFSFile file = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
+            return file;
+        }).flatMap(file -> {
             if (file == null) {
                 return Try.failure(new RuntimeException("File not found with id: " + id));
             }
             GridFsResource resource = operations.getResource(file);
-            return Try.ofChecked(() -> new String(resource.getInputStream().readAllBytes()));
-        });
+            return Try.success(resource);
+        }).flatMap(resource -> 
+            Try.ofChecked(() -> {
+                try (var inputStream = resource.getInputStream()) {
+                    byte[] bytes = inputStream.readAllBytes();
+                    return Base64.getEncoder().encodeToString(bytes);
+                }
+            })
+        );
     }
 
     public Try<String> saveFile(MultipartFile file) {
