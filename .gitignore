@@ -32,3 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 .mvn/*
+
+
+### public private keys ###
+*.pem
+*.key
+*.crt
+*.cer
