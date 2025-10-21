@@ -15,8 +15,8 @@ public class KeyProvider {
 
     public KeyProvider() throws Exception {
         // Load the keys from PEM files
-        byte[] publicBytes = readPemFile("keys/public.pem");
-        byte[] privateBytes = readPemFile("keys/private.pem");
+        byte[] publicBytes = readPemFile("./keys/public.pem");
+        byte[] privateBytes = readPemFile("./keys/private.pem");
 
         // Parse public key
         X509EncodedKeySpec pubSpec = new X509EncodedKeySpec(publicBytes);
@@ -30,9 +30,6 @@ public class KeyProvider {
 
     public PublicKey getPublicKey() {
         return publicKey;
-    }
-    private PrivateKey getPrivateKey() {
-        return privateKey;
     }
 
     private byte[] readPemFile(String path) throws Exception {
