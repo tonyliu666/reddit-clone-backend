@@ -15,7 +15,9 @@ public class RegistrationController {
     // /api/v1/signup
     @PostMapping("/signup")
     public String registerUser(@RequestBody UserRegistrationRequest request) {
-        // Registration logic here
+        
         return request.getEncryptedAccount() + " " + request.getEncryptedPass();
+        // store the encryptedAccount and encryptedPass to postgres whose data lives in the mydb table in postgres DB
+        
     }
 }
