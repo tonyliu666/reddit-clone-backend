@@ -35,4 +35,4 @@ build/
 
 
 ### public private keys ###
-./redit-clone/src/main/resources/keys/*
+src/main/resources/keys/*.pem
