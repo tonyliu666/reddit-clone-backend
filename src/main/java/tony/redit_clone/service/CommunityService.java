@@ -3,14 +3,18 @@ package tony.redit_clone.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import tony.redit_clone.aspect.RateLimited;
 import tony.redit_clone.dto.CommunityResponse;
 import tony.redit_clone.model.Community;
 import tony.redit_clone.repository.CommunityRepository;
 import tony.redit_clone.repository.FileStorageRepository;
 import tony.redit_clone.util.Try;
 import org.springframework.stereotype.Service;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 
 @Service
 public class CommunityService {
@@ -18,8 +22,8 @@ public class CommunityService {
     private FileStorageRepository fileStorageRepository;
     @Autowired
     private CommunityRepository communityRepository;
-
-    
+    @Autowired
+    private RestTemplate restTemplate;
 
     public Try<String> createCommunity(String name, String description, MultipartFile banner,  MultipartFile icon) {
         // check name is unique
@@ -61,5 +65,27 @@ public class CommunityService {
             );
             return response;
         }).toList());
+    }
+    @Retryable(
+        maxAttempts = 3,
+        backoff = @Backoff(
+            delay = 1000,          // initial delay = 1 sec
+            multiplier = 3.0       // exponential backoff (1s → 3s → 9s → 27s → 81s)
+        )
+    )
+    @RateLimited
+    public void testRetry() {
+        privateRetry();
+    }
+    
+    private void privateRetry(){
+        String threadName = Thread.currentThread().getName();
+        long now = System.currentTimeMillis();
+        System.out.println("Retry attempt at: " + now + " on thread: " + threadName);
+
+        restTemplate.getForObject(
+            "http://localhost:8080/api/v1/failed",
+            String.class
+        );
     }
 }

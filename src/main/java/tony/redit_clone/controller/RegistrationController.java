@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tony.redit_clone.dto.UserRegistrationRequest;
 import tony.redit_clone.model.User;
 import tony.redit_clone.repository.UserRepository;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -27,16 +28,28 @@ public class RegistrationController {
 
         // Check if user already exists
         if (userRepository.findByEncryptedAccount(request.getEncryptedAccount()).isPresent()) {
-            return "User already exists";
+            throw new IllegalArgumentException("User already exists");
         }
-
         // Create and save new user
         User user = new User();
         user.setEncryptedAccount(request.getEncryptedAccount());
-        user.setEncryptedPass(request.getEncryptedPass());
+        user.setEncryptedPassWord(request.getEncryptedPassWord());
 
         userRepository.save(user);
 
         return "User registered successfully";
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@RequestBody UserRegistrationRequest request) {
+        Optional<User> user = userRepository.findByEncryptedAccount(request.getEncryptedAccount());
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+        if (!user.get().getEncryptedPassWord().equals(request.getEncryptedPassWord())) {
+            throw new IllegalArgumentException("Invalid password");
+        }
+        return "User logged in successfully";
+
     }
 }

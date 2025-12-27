@@ -22,7 +22,7 @@ public class User {
     private String encryptedAccount;
 
     @Column(nullable = false)
-    private String encryptedPass;
+    private String encryptedPassWord;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

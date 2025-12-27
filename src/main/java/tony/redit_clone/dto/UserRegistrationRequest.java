@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class UserRegistrationRequest {
     private String encryptedAccount;
-    private String encryptedPass;
+    private String encryptedPassWord;
 }
