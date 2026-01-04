@@ -1,4 +1,5 @@
 package tony.redit_clone.security;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -35,10 +36,16 @@ public class KeyProvider {
     private byte[] readPemFile(String path) throws Exception {
         String key = Files.readString(new ClassPathResource(path).getFile().toPath());
         key = key
-            .replaceAll("-----BEGIN (.*)-----", "")
-            .replaceAll("-----END (.*)----", "")
-            .replaceAll("\\s", "");
+                .replaceAll("-----BEGIN (.*)-----", "")
+                .replaceAll("-----END (.*)----", "")
+                .replaceAll("\\s", "");
         return Base64.getDecoder().decode(key);
     }
-}
 
+    public String decrypt(String encryptedData) throws Exception {
+        javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("RSA");
+        cipher.init(javax.crypto.Cipher.DECRYPT_MODE, privateKey);
+        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
+        return new String(decryptedBytes, java.nio.charset.StandardCharsets.UTF_8);
+    }
+}

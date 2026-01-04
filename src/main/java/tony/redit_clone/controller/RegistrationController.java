@@ -10,6 +10,7 @@ import tony.redit_clone.dto.UserRegistrationRequest;
 import tony.redit_clone.model.User;
 import tony.redit_clone.repository.UserRepository;
 import java.util.Optional;
+import tony.redit_clone.security.KeyProvider;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -17,9 +18,11 @@ import java.util.Optional;
 public class RegistrationController {
 
     private final UserRepository userRepository;
+    private final KeyProvider keyProvider;
 
-    public RegistrationController(UserRepository userRepository) {
+    public RegistrationController(UserRepository userRepository, KeyProvider keyProvider) {
         this.userRepository = userRepository;
+        this.keyProvider = keyProvider;
     }
 
     // /api/v1/signup
@@ -46,8 +49,14 @@ public class RegistrationController {
         if (user.isEmpty()) {
             throw new IllegalArgumentException("User not found");
         }
-        if (!user.get().getEncryptedPassWord().equals(request.getEncryptedPassWord())) {
-            throw new IllegalArgumentException("Invalid password");
+        try {
+            String decryptedStoredPassword = keyProvider.decrypt(user.get().getEncryptedPassWord());
+            String decryptedRequestPassword = keyProvider.decrypt(request.getEncryptedPassWord());
+            if (!decryptedStoredPassword.equals(decryptedRequestPassword)) {
+                throw new IllegalArgumentException("Invalid password");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error decrypting password", e);
         }
         return "User logged in successfully";
 
