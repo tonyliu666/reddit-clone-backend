@@ -12,6 +12,11 @@ import tony.redit_clone.repository.UserRepository;
 import java.util.Optional;
 import tony.redit_clone.security.KeyProvider;
 
+/**
+ * Controller for handling user registration and authentication.
+ * Manages user sign-up and login workflows with credential
+ * encryption/decryption.
+ */
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/v1")
@@ -26,6 +31,15 @@ public class RegistrationController {
     }
 
     // /api/v1/signup
+    /**
+     * Registers a new user.
+     * Validates if the user already exists and saves the encrypted credentials.
+     *
+     * @param request the registration request containing encrypted account and
+     *                password
+     * @return a success message
+     * @throws IllegalArgumentException if the user already exists
+     */
     @PostMapping("/signup")
     public String registerUser(@RequestBody UserRegistrationRequest request) {
 
@@ -43,6 +57,16 @@ public class RegistrationController {
         return "User registered successfully";
     }
 
+    /**
+     * Authenticates a user.
+     * Decrypts the stored and provided passwords to perform a comparison.
+     *
+     * @param request the login request containing encrypted account and password
+     * @return a success message
+     * @throws IllegalArgumentException if the user is not found or the password is
+     *                                  invalid
+     * @throws RuntimeException         if decryption fails
+     */
     @PostMapping("/login")
     public String loginUser(@RequestBody UserRegistrationRequest request) {
         Optional<User> user = userRepository.findByEncryptedAccount(request.getEncryptedAccount());

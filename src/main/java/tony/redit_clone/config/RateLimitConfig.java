@@ -7,9 +7,20 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
 import java.time.Duration;
 
+/**
+ * Configuration class for Rate Limiting.
+ * Defines the {@link Bucket} beans used for rate limiting strategies.
+ */
 @Configuration
 public class RateLimitConfig {
 
+    /**
+     * Creates a {@link Bucket} for public key rate limiting.
+     * Configured with a capacity of 10 tokens and a refill rate of 10 tokens per
+     * minute.
+     *
+     * @return the configured {@link Bucket} instance
+     */
     @Bean
     public Bucket publicKeyBucket() {
         // Defines a limit of 10 refills every 1 minute
