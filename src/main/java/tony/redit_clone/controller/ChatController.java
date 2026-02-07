@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.Message;
+import tony.redit_clone.dto.ChatRoomMessage;
 
 /**
  * Controller for handling real-time chat messages.
@@ -24,9 +24,10 @@ public class ChatController {
      * @param message the received chat message
      * @return the same message to be broadcasted
      */
-    @MessageMapping("/chat")
+    @MessageMapping("/messages/chat")
     @SendTo("/topic/messages")
-    public Message sendMessage(Message message) {
+    public ChatRoomMessage sendMessage(ChatRoomMessage message) {
+        System.out.println("Received message: " + message);
         return message;
     }
 }
