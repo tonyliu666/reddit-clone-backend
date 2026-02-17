@@ -17,6 +17,13 @@ import tony.redit_clone.dto.ChatRoomMessage;
 @RestController
 @RequestMapping("/api/v1")
 public class ChatController {
+
+    private final tony.redit_clone.service.AiChatService aiChatService;
+
+    public ChatController(tony.redit_clone.service.AiChatService aiChatService) {
+        this.aiChatService = aiChatService;
+    }
+
     /**
      * Processes a chat message and broadcasts it to all subscribers of the
      * "/topic/messages" topic.
@@ -27,7 +34,6 @@ public class ChatController {
     @MessageMapping("/messages/chat")
     @SendTo("/topic/messages")
     public ChatRoomMessage sendMessage(ChatRoomMessage message) {
-        System.out.println("Received message: " + message);
-        return message;
+        return aiChatService.getAiResponse(message);
     }
 }
