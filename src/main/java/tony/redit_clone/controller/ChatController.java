@@ -33,7 +33,7 @@ public class ChatController {
      */
     @MessageMapping("/messages/chat")
     @SendTo("/topic/messages")
-    public ChatRoomMessage sendMessage(ChatRoomMessage message) {
+    public ChatRoomMessage sendMessage(ChatRoomMessage message) {   
         return aiChatService.getAiResponse(message);
     }
 }
